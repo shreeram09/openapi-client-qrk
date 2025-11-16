@@ -1,0 +1,667 @@
+---
+openapi: 3.0.3
+info:
+  title: Swagger Petstore API
+  description: |
+    A secure Pet Store Server based on the OpenAPI 3.0 specification.
+    
+    This API implements security best practices including:
+    - JWT-based authentication
+    - Rate limiting
+    - Input validation
+    - Comprehensive error handling
+  version: 1.0.0
+  contact:
+    name: API Support Team
+    email: support@petstore.example.com
+    url: https://petstore.example.com/support
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://petstore.example.com/terms
+
+servers:
+  - url: https://api.petstore.example.com/v1
+    description: Production server (HTTPS)
+  - url: https://staging-api.petstore.example.com/v1
+    description: Staging server
+  - url: http://localhost:8080/v1
+    description: Development server
+
+externalDocs:
+  description: Complete API documentation
+  url: https://docs.petstore.example.com
+
+tags:
+  - name: Pets
+    description: Pet management operations
+    externalDocs:
+      description: Find out more
+      url: https://docs.petstore.example.com/pets
+
+security:
+  - bearerAuth: []
+
+paths:
+  /pets:
+    get:
+      tags:
+        - Pets
+      summary: List all pets
+      description: |
+        Retrieve a paginated list of pets. Supports filtering and pagination.
+        Rate limit: 100 requests per minute per API key.
+      operationId: listPets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of pets to return (default 20)
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+        - name: offset
+          in: query
+          required: false
+          description: Number of items to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+          example: 0
+        - name: tag
+          in: query
+          required: false
+          description: Filter by pet tag/category
+          schema:
+            type: string
+            enum: [dog, cat, bird, fish, other]
+          example: cat
+      responses:
+        "200":
+          description: Successful operation
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Request limit per minute
+              example: 100
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Remaining requests
+              example: 95
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Time when rate limit resets (Unix timestamp)
+            X-Total-Count:
+              schema:
+                type: integer
+              description: Total number of pets available
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              description: CORS header
+            Strict-Transport-Security:
+              schema:
+                type: string
+              description: HSTS header
+              example: "max-age=31536000; includeSubDomains"
+            X-Content-Type-Options:
+              schema:
+                type: string
+              description: Prevents MIME sniffing
+              example: nosniff
+            X-Frame-Options:
+              schema:
+                type: string
+              description: Clickjacking protection
+              example: DENY
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Pet"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+              examples:
+                petsList:
+                  summary: Sample list of pets
+                  value:
+                    data:
+                      - id: 1
+                        name: "Fluffy"
+                        tag: "cat"
+                        createdAt: "2025-01-15T10:30:00Z"
+                        updatedAt: "2025-01-15T10:30:00Z"
+                      - id: 2
+                        name: "Buddy"
+                        tag: "dog"
+                        createdAt: "2025-01-14T15:20:00Z"
+                        updatedAt: "2025-01-14T15:20:00Z"
+                    pagination:
+                      limit: 20
+                      offset: 0
+                      total: 2
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    post:
+      tags:
+        - Pets
+      summary: Create a new pet
+      description: |
+        Create a new pet in the store.
+        Requires authentication and 'write:pets' permission.
+        Rate limit: 20 requests per minute per API key.
+      operationId: createPet
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Pet object that needs to be added to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetInput"
+            examples:
+              cat:
+                summary: Create a cat
+                value:
+                  name: "Whiskers"
+                  tag: "cat"
+              dog:
+                summary: Create a dog
+                value:
+                  name: "Max"
+                  tag: "dog"
+      responses:
+        "201":
+          description: Pet created successfully
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created pet
+              example: "/v1/pets/123"
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              example: 20
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              example: 19
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+              example:
+                id: 123
+                name: "Whiskers"
+                tag: "cat"
+                createdAt: "2025-11-15T10:30:00Z"
+                updatedAt: "2025-11-15T10:30:00Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /pets/{petId}:
+    get:
+      tags:
+        - Pets
+      summary: Get a pet by ID
+      description: |
+        Retrieve detailed information about a specific pet.
+        Returns 404 if pet not found or user doesn't have access.
+      operationId: getPetById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier of the pet (numeric ID)
+          schema:
+            type: string
+            pattern: '^[0-9]+$'
+            minLength: 1
+            maxLength: 20
+          example: "12345"
+      responses:
+        "200":
+          description: Successful operation
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+            ETag:
+              schema:
+                type: string
+              description: Entity tag for caching
+            Cache-Control:
+              schema:
+                type: string
+              example: "private, max-age=300"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+              example:
+                id: 12345
+                name: "Fluffy"
+                tag: "cat"
+                createdAt: "2025-01-15T10:30:00Z"
+                updatedAt: "2025-01-15T10:30:00Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      tags:
+        - Pets
+      summary: Update a pet
+      description: Update an existing pet by ID
+      operationId: updatePet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier of the pet
+          schema:
+            type: string
+            pattern: '^[0-9]+$'
+            minLength: 1
+            maxLength: 20
+          example: "12345"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetInput"
+      responses:
+        "200":
+          description: Pet updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags:
+        - Pets
+      summary: Delete a pet
+      description: Remove a pet from the store
+      operationId: deletePet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier of the pet
+          schema:
+            type: string
+            pattern: '^[0-9]+$'
+            minLength: 1
+            maxLength: 20
+          example: "12345"
+      responses:
+        "204":
+          description: Pet deleted successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT-based authentication. Include the token in the Authorization header:
+        `Authorization: Bearer <token>`
+        
+        Token should be obtained from the authentication endpoint.
+
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          description: Unique identifier (auto-generated by system)
+          example: 12345
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z0-9\s\-\.]+$'
+          description: Pet name (alphanumeric, spaces, hyphens, and dots allowed)
+          example: "Fluffy"
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 50
+          enum: [dog, cat, bird, fish, other]
+          description: Pet category/type
+          example: "cat"
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when pet was created
+          example: "2025-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when pet was last updated
+          example: "2025-01-15T10:30:00Z"
+
+    PetInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z0-9\s\-\.]+$'
+          description: Pet name (alphanumeric, spaces, hyphens, and dots allowed)
+          example: "Fluffy"
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 50
+          enum: [dog, cat, bird, fish, other]
+          description: Pet category/type
+          default: "other"
+          example: "cat"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+        - path
+      properties:
+        error:
+          type: string
+          description: Error type/code
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message (sanitized, no sensitive data)
+          example: "Invalid input: name is required"
+        details:
+          type: array
+          description: Detailed validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "name"
+              message:
+                type: string
+                example: "must not be blank"
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+          example: "2025-11-15T10:30:00Z"
+        path:
+          type: string
+          description: Request path that caused the error
+          example: "/v1/pets"
+        requestId:
+          type: string
+          format: uuid
+          description: Unique request identifier for tracing
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    Pagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Number of items per page
+          example: 20
+        offset:
+          type: integer
+          description: Number of items skipped
+          example: 0
+        total:
+          type: integer
+          description: Total number of items available
+          example: 100
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "BAD_REQUEST"
+            message: "Invalid input parameters"
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    Unauthorized:
+      description: Unauthorized - Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "UNAUTHORIZED"
+            message: "Authentication required"
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "FORBIDDEN"
+            message: "Insufficient permissions to access this resource"
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets/123"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    NotFound:
+      description: Not Found - Resource doesn't exist
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "NOT_FOUND"
+            message: "Pet not found"
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets/99999"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    UnprocessableEntity:
+      description: Unprocessable Entity - Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "VALIDATION_ERROR"
+            message: "Validation failed"
+            details:
+              - field: "name"
+                message: "must not be blank"
+              - field: "tag"
+                message: "must be one of: dog, cat, bird, fish, other"
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    TooManyRequests:
+      description: Too Many Requests - Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests (0)
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Time when rate limit resets
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "RATE_LIMIT_EXCEEDED"
+            message: "Too many requests. Please try again later."
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    InternalServerError:
+      description: Internal Server Error - Unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "INTERNAL_SERVER_ERROR"
+            message: "An unexpected error occurred. Please try again later."
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+    ServiceUnavailable:
+      description: Service Unavailable - Service temporarily unavailable
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "SERVICE_UNAVAILABLE"
+            message: "Service temporarily unavailable. Please try again later."
+            timestamp: "2025-11-15T10:30:00Z"
+            path: "/v1/pets"
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+
+  parameters:
+    PetIdParam:
+      name: petId
+      in: path
+      required: true
+      description: Unique identifier of the pet
+      schema:
+        type: string
+        pattern: '^[0-9]+$'
+        minLength: 1
+        maxLength: 20
+      example: "12345"
+
