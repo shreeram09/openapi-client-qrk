@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.8.6</quarkus.platform.version>
+        <quarkus.platform.version>3.20.4</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
@@ -52,18 +52,13 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-client</artifactId>
+            <artifactId>quarkus-resteasy-client-jackson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-client-jackson</artifactId>
-        </dependency>
-
         <!-- OpenAPI Generator -->
         <dependency>
             <groupId>io.quarkiverse.openapi.generator</groupId>
             <artifactId>quarkus-openapi-generator</artifactId>
-            <version>2.6.0-lts</version>
+            <version>2.13.0-lts</version>
         </dependency>
 
         <!-- OpenAPI and Swagger UI -->
@@ -92,7 +87,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
         </dependency>
 
         <!-- Testing -->
