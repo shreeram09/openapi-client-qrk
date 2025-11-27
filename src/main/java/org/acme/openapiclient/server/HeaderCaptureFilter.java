@@ -1,8 +1,6 @@
 package org.acme.openapiclient.server;
 
 import io.vertx.core.Vertx;
-import jakarta.annotation.Priority;
-import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
@@ -21,8 +19,6 @@ public class HeaderCaptureFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        Priority priority = this.getClass().getAnnotation(Priority.class);
-        int priorityValue = (priority != null) ? priority.value() : Priorities.USER;
         // Get Vert.x context
         io.vertx.core.Context vertxContext = Vertx.currentContext();
         log.infof("╔══════════════════════════════════════════════════════════");
@@ -30,7 +26,6 @@ public class HeaderCaptureFilter implements ContainerRequestFilter {
         log.infof("╠══════════════════════════════════════════════════════════");
         log.infof("║ Method: %s", requestContext.getMethod());
         log.infof("║ URI: %s", requestContext.getUriInfo().getRequestUri());
-        log.infof("║ Filter Priority: %d", priorityValue);
         log.infof("╠══════════════════════════════════════════════════════════");
 
         if (vertxContext != null) {

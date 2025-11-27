@@ -1,7 +1,5 @@
 package org.acme.openapiclient.client;
 
-import jakarta.annotation.Priority;
-import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.ext.Provider;
@@ -20,14 +18,11 @@ public class PetStoreClientLoggingFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-        Priority priority = this.getClass().getAnnotation(Priority.class);
-        int priorityValue = (priority != null) ? priority.value() : Priorities.USER;
         log.infof("╔══════════════════════════════════════════════════════════");
         log.infof("║ OUTGOING REST CLIENT REQUEST");
         log.infof("╠══════════════════════════════════════════════════════════");
         log.infof("║ Method: %s", requestContext.getMethod());
         log.infof("║ URI: %s", requestContext.getUri());
-        log.infof("║ Filter Priority: %d", priorityValue);
         log.infof("╠══════════════════════════════════════════════════════════");
         log.infof("║ HEADERS:");
 

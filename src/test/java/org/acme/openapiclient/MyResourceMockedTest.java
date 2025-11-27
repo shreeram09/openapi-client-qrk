@@ -1,7 +1,7 @@
 package org.acme.openapiclient;
 
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
 import org.acme.openapiclient.petstore.model.Pet;
 import org.acme.openapiclient.service.PetService;

@@ -1,8 +1,6 @@
 package org.acme.openapiclient.client;
 
 import io.vertx.core.Vertx;
-import jakarta.annotation.Priority;
-import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.ext.Provider;
@@ -22,12 +20,9 @@ public class PetStoreHeaderPropagationFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-        Priority priority = this.getClass().getAnnotation(Priority.class);
-        int priorityValue = (priority != null) ? priority.value() : Priorities.USER;
         log.infof("╔══════════════════════════════════════════════════════════");
         log.infof("║ HEADER PROPAGATION FILTER");
         log.infof("╠══════════════════════════════════════════════════════════");
-        log.infof("║ Filter Priority: %d", priorityValue);
         // Try to get Vert.x context (Quarkus stores request data here)
         io.vertx.core.Context vertxContext = Vertx.currentContext();
 
