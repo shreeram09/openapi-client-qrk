@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * MapStruct mapper for converting between Pet domain models and DTOs.
- *
+ * <p>
  * MapStruct will automatically generate the implementation at compile time.
  * The generated class will be named PetMapperImpl and will be a CDI bean.
  */

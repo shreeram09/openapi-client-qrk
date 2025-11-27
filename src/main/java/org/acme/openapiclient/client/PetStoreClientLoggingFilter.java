@@ -26,15 +26,13 @@ public class PetStoreClientLoggingFilter implements ClientRequestFilter {
         log.infof("╠══════════════════════════════════════════════════════════");
         log.infof("║ HEADERS:");
 
-        requestContext.getHeaders().forEach((key, values) -> {
-            values.forEach(value -> {
-                if (key.equalsIgnoreCase("Authorization")) {
-                    log.infof("║   %s: %s", key, maskToken(String.valueOf(value)));
-                } else {
-                    log.infof("║   %s: %s", key, value);
-                }
-            });
-        });
+        requestContext.getHeaders().forEach((key, values) -> values.forEach(value -> {
+            if (key.equalsIgnoreCase("Authorization")) {
+                log.infof("║   %s: %s", key, maskToken(String.valueOf(value)));
+            } else {
+                log.infof("║   %s: %s", key, value);
+            }
+        }));
 
         log.infof("╚══════════════════════════════════════════════════════════");
 

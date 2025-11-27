@@ -25,11 +25,11 @@ public class HeaderTestResource {
 
     /**
      * Test endpoint to validate header propagation.
-     *
+     * <p>
      * Usage:
      * curl -H "Authorization: Bearer test-token-123" \
      *      -H "X-Request-ID: req-456" \
-     *      http://localhost:8779/api/test/headers
+     *  <a href="    http://localhost:8779/api/test/hea">...</a>ders
      */
     @GET
     @Path("/headers")
@@ -38,15 +38,13 @@ public class HeaderTestResource {
         log.infof("║ INCOMING REQUEST HEADERS");
         log.infof("╠══════════════════════════════════════════════════════════");
 
-        headers.getRequestHeaders().forEach((key, values) -> {
-            values.forEach(value -> {
-                if (key.equalsIgnoreCase("Authorization")) {
-                    log.infof("║   %s: %s", key, maskToken(value));
-                } else {
-                    log.infof("║   %s: %s", key, value);
-                }
-            });
-        });
+        headers.getRequestHeaders().forEach((key, values) -> values.forEach(value -> {
+            if (key.equalsIgnoreCase("Authorization")) {
+                log.infof("║   %s: %s", key, maskToken(value));
+            } else {
+                log.infof("║   %s: %s", key, value);
+            }
+        }));
 
         log.infof("╚══════════════════════════════════════════════════════════");
         log.infof("Now calling PetService.getAllPets()...");
@@ -68,9 +66,9 @@ public class HeaderTestResource {
 
     /**
      * Test endpoint with custom headers.
-     *
+     * <p>
      * Usage:
-     * curl -X POST http://localhost:8779/api/test/headers/custom \
+     * curl -X P<a href="OST">http://localhost:8779/api/test/headers/cu</a>stom \
      *      -H "Authorization: Bearer my-jwt-token" \
      *      -H "X-Request-ID: custom-req-789" \
      *      -H "X-Correlation-ID: corr-123" \
@@ -88,9 +86,7 @@ public class HeaderTestResource {
         log.infof("╠══════════════════════════════════════════════════════════");
         log.infof("║ Pet to create: %s", petDTO);
 
-        headers.getRequestHeaders().forEach((key, values) -> {
-            log.infof("║   %s: %s", key, values);
-        });
+        headers.getRequestHeaders().forEach((key, values) -> log.infof("║   %s: %s", key, values));
 
         log.infof("╚══════════════════════════════════════════════════════════");
 
@@ -109,15 +105,13 @@ public class HeaderTestResource {
         StringBuilder sb = new StringBuilder();
         sb.append("=== Received Headers ===\n\n");
 
-        headers.getRequestHeaders().forEach((key, values) -> {
-            values.forEach(value -> {
-                if (key.equalsIgnoreCase("Authorization")) {
-                    sb.append(String.format("%s: %s\n", key, maskToken(value)));
-                } else {
-                    sb.append(String.format("%s: %s\n", key, value));
-                }
-            });
-        });
+        headers.getRequestHeaders().forEach((key, values) -> values.forEach(value -> {
+            if (key.equalsIgnoreCase("Authorization")) {
+                sb.append(String.format("%s: %s\n", key, maskToken(value)));
+            } else {
+                sb.append(String.format("%s: %s\n", key, value));
+            }
+        }));
 
         sb.append("\n=== Header Propagation Status ===\n");
         sb.append(String.format("✓ Authorization: %s\n",

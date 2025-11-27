@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Integration tests for the Pet Store Client REST API.
- *
+ * <p>
  * Note: These tests verify the application endpoints work correctly.
  * Tests that interact with the external Pet Store API will fail if the API is not running.
  * In a production environment, you would mock the external API or use WireMock.

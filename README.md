@@ -69,13 +69,13 @@ Benefits:
 - Allows development/testing without external dependency
 
 ## 6. Known Issues & Resolutions
-| Issue | Symptom | Root Cause | Resolution |
-|-------|---------|------------|-----------|
-| ClassCastException when reading entities | `InputStreamWrapper cannot be cast` | Using `Response` with `return-response=true` and raw `List.class` casts | Prefer `return-response=false` to get typed returns OR use `response.readEntity(new GenericType<List<Pet>>() {})` and try-with-resources |
-| Missing bean injection warning | Rest client field un-injected | Lacked `@Inject` annotation | Add `@Inject @RestClient` to `DefaultApi` field |
-| CredentialsProvider build error (earlier) | BuildException referencing ConfigCredentialsProvider | Security generation expected credentials bean | Keep `enable-security-generation=false` or implement CredentialsProvider bean |
-| Headers not appearing in outbound requests | Logging shows missing Authorization/X-Request-ID | Capture filter didn’t store / propagation list incomplete | Ensure server capture filter runs, providers registered, persist dynamic header map (future) |
-| Duplicate provider registration warning | `Provider instance ... already registered` | Provider added twice (auto + manual) | Remove duplicate registration (keep one configuration path) |
+| Issue                                      | Symptom                                              | Root Cause                                                              | Resolution                                                                                                                               |
+|--------------------------------------------|------------------------------------------------------|-------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| ClassCastException when reading entities   | `InputStreamWrapper cannot be cast`                  | Using `Response` with `return-response=true` and raw `List.class` casts | Prefer `return-response=false` to get typed returns OR use `response.readEntity(new GenericType<List<Pet>>() {})` and try-with-resources |
+| Missing bean injection warning             | Rest client field un-injected                        | Lacked `@Inject` annotation                                             | Add `@Inject @RestClient` to `DefaultApi` field                                                                                          |
+| CredentialsProvider build error (earlier)  | BuildException referencing ConfigCredentialsProvider | Security generation expected credentials bean                           | Keep `enable-security-generation=false` or implement CredentialsProvider bean                                                            |
+| Headers not appearing in outbound requests | Logging shows missing Authorization/X-Request-ID     | Capture filter didn’t store / propagation list incomplete               | Ensure server capture filter runs, providers registered, persist dynamic header map (future)                                             |
+| Duplicate provider registration warning    | `Provider instance ... already registered`           | Provider added twice (auto + manual)                                    | Remove duplicate registration (keep one configuration path)                                                                              |
 
 ## 7. Configuration Highlights
 ```
@@ -149,13 +149,13 @@ Test categories:
 If external API is absent, integration tests expecting remote success will show fallback or 500 depending on path — this is intentional.
 
 ## 10. Troubleshooting
-| Symptom | Possible Cause | Action |
-|---------|----------------|--------|
-| Missing generated classes (`petstore.*`) | Generator not run yet | `./mvnw clean compile` |
-| `DefaultApi` null | Missing `@Inject` | Add `@Inject @RestClient` |
-| Headers not propagated | Providers not registered | Uncomment providers property or ensure filters annotated/registered |
-| ClassCastException on response entity | Raw `List.class` read with `return-response=true` | Change generator setting or use `GenericType<List<Pet>>` |
-| Build failure referencing credentials provider | Stale generated security code | Clean build + keep security generation disabled |
+| Symptom                                        | Possible Cause                                    | Action                                                              |
+|------------------------------------------------|---------------------------------------------------|---------------------------------------------------------------------|
+| Missing generated classes (`petstore.*`)       | Generator not run yet                             | `./mvnw clean compile`                                              |
+| `DefaultApi` null                              | Missing `@Inject`                                 | Add `@Inject @RestClient`                                           |
+| Headers not propagated                         | Providers not registered                          | Uncomment providers property or ensure filters annotated/registered |
+| ClassCastException on response entity          | Raw `List.class` read with `return-response=true` | Change generator setting or use `GenericType<List<Pet>>`            |
+| Build failure referencing credentials provider | Stale generated security code                     | Clean build + keep security generation disabled                     |
 
 ## 11. Future Enhancements (Backlog)
 - Dynamic full-header propagation via stored Map in Vert.x context
