@@ -13,7 +13,7 @@ import java.io.IOException;
  * Client Request Filter that propagates headers from incoming HTTP request to outgoing REST client calls.
  * Uses Vert.x context to access headers stored by the server-side interceptor.
  */
-@Provider
+/*@Provider
 public class PetStoreHeaderPropagationFilter implements ClientRequestFilter {
 
     private static final Logger log = Logger.getLogger(PetStoreHeaderPropagationFilter.class);
@@ -96,4 +96,4 @@ public class PetStoreHeaderPropagationFilter implements ClientRequestFilter {
         return token.substring(0, 10) + "..." + token.substring(token.length() - 4);
     }
 }
-
+*/

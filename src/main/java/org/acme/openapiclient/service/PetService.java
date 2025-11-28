@@ -2,6 +2,7 @@ package org.acme.openapiclient.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import org.acme.openapiclient.petstore.api.DefaultApi;
 import org.acme.openapiclient.petstore.model.Pet;
@@ -85,8 +86,7 @@ public class PetService {
                 return null;
             }
 
-            @SuppressWarnings("unchecked")
-            List<Pet> pets = response.readEntity(List.class);
+            List<Pet> pets = response.readEntity(new GenericType<List<Pet>>() {});
             log.infof("Successfully retrieved %d pets from external API", pets != null ? pets.size() : 0);
             return pets;
 

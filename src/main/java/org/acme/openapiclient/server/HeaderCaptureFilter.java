@@ -38,7 +38,7 @@ public class HeaderCaptureFilter implements ContainerRequestFilter {
                 if (shouldPropagateHeader(headerName)) {
                     String headerValue = requestContext.getHeaderString(headerName);
                     if (headerValue != null) {
-                        vertxContext.putLocal(headerName, headerValue);
+//                        vertxContext.putLocal(headerName, headerValue);
                         capturedCount++;
                         // Log headers
                         log.infof("║   %s: %s", headerName, headerName.equalsIgnoreCase("Authorization") ? maskToken(headerValue) : headerValue);

@@ -1,5 +1,5 @@
 ---
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   description: A sample Pet Store Server based on the OpenAPI 3.0 specification
   license:
@@ -12,10 +12,10 @@ servers:
   - url: http://petstore.swagger.io/v1
     description: Production server
 security:
-  - bearerAuth: []
+  - myBearerAuth: []
 components:
   securitySchemes:
-    bearerAuth:
+    myBearerAuth:
       type: http
       description: "JWT Bearer token authentication. Example: 'Bearer <token>'"
       scheme: bearer
@@ -34,6 +34,8 @@ components:
 paths:
   /pets:
     get:
+      summary: List all pets
+      operationId: listPets
       parameters:
         - name: limit
           in: query
@@ -51,6 +53,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/Pet"
     post:
+      summary: Create a pet
+      operationId: createPets
       requestBody:
         content:
           application/json:
@@ -62,6 +66,8 @@ paths:
           description: Created
   /pets/{petId}:
     get:
+      summary: Info for a specific pet
+      operationId: showPetById
       parameters:
         - name: petId
           in: path
