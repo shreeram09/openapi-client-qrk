@@ -80,18 +80,21 @@ public class PetService {
      */
     private List<Pet> tryGetPetsFromExternalApi(Integer limit) {
         try {
-            Response response = petStoreApi.petsGet(limit);
-            if (response.getStatus() != 200) {
-                log.warnf("External API returned status: %d. Using mock data.", response.getStatus());
-                return null;
-            }
+            List<Pet> pets;
+            try (Response response = petStoreApi.listPets(limit)) {
+                if (response.getStatus() != 200) {
+                    log.warnf("External API returned status: %d. Using mock data.", response.getStatus());
+                    return null;
+                }
 
-            List<Pet> pets = response.readEntity(new GenericType<List<Pet>>() {});
+                pets = response.readEntity(new GenericType<List<Pet>>() {
+                });
+            }
             log.infof("Successfully retrieved %d pets from external API", pets != null ? pets.size() : 0);
             return pets;
 
         } catch (Exception e) {
-            log.warnf(e,"External Pet Store API unavailable: %s. Using mock data.", e.getMessage());
+            log.warnf(e, "External Pet Store API unavailable: %s. Using mock data.", e.getMessage());
             return null;
         }
     }
@@ -132,18 +135,20 @@ public class PetService {
      */
     private Pet tryGetPetFromExternalApi(String petId) {
         try {
-            Response response = petStoreApi.petsPetIdGet(petId);
-            if (response.getStatus() != 200) {
-                log.warnf("Pet not found with ID: %s. Status: %d. Checking mock data.", petId, response.getStatus());
-                return null;
-            }
+            Pet pet;
+            try (Response response = petStoreApi.showPetById(petId)) {
+                if (response.getStatus() != 200) {
+                    log.warnf("Pet not found with ID: %s. Status: %d. Checking mock data.", petId, response.getStatus());
+                    return null;
+                }
 
-            Pet pet = response.readEntity(Pet.class);
+                pet = response.readEntity(Pet.class);
+            }
             log.infof("Successfully retrieved pet from external API: %s", petId);
             return pet;
 
         } catch (Exception e) {
-            log.warnf(e,"External Pet Store API unavailable: %s. Using mock data.", e.getMessage());
+            log.warnf(e, "External Pet Store API unavailable: %s. Using mock data.", e.getMessage());
             return null;
         }
     }
@@ -189,18 +194,20 @@ public class PetService {
      */
     private Pet tryCreatePetInExternalApi(Pet pet) {
         try {
-            Response response = petStoreApi.petsPost(pet);
-            if (response.getStatus() != 201) {
-                log.warnf("External API returned status: %d. Simulating pet creation.", response.getStatus());
-                return null;
-            }
+            Pet createdPet;
+            try (Response response = petStoreApi.createPets(pet)) {
+                if (response.getStatus() != 201) {
+                    log.warnf("External API returned status: %d. Simulating pet creation.", response.getStatus());
+                    return null;
+                }
 
-            Pet createdPet = response.readEntity(Pet.class);
+                createdPet = response.readEntity(Pet.class);
+            }
             log.infof("Successfully created pet in external API: %s", createdPet.getName());
             return createdPet;
 
         } catch (Exception e) {
-            log.warnf(e,"External Pet Store API unavailable: %s. Simulating pet creation.", e.getMessage());
+            log.warnf(e, "External Pet Store API unavailable: %s. Simulating pet creation.", e.getMessage());
             return null;
         }
     }

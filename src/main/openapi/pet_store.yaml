@@ -2,10 +2,11 @@
 openapi: 3.1.0
 info:
   description: A sample Pet Store Server based on the OpenAPI 3.0 specification
-  license:
-    name: MIT
   title: Swagger Petstore API
   version: 1.0.0
+  license:
+    name: MIT
+    identifier: MIT
 servers:
   - url: http://localhost:8080
     description: Development server
