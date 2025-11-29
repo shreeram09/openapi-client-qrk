@@ -1,3 +1,4 @@
+---
 openapi: 3.0.3
 info:
   title: Swagger Petstore API
@@ -17,7 +18,6 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-    identifier: Apache-2.0
   termsOfService: https://petstore.example.com/terms
 
 servers:
@@ -664,3 +664,4 @@ components:
         minLength: 1
         maxLength: 20
       example: "12345"
+
