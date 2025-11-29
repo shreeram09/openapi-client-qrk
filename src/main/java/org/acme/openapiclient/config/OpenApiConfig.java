@@ -9,7 +9,6 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
-import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 @ApplicationPath("/")
 @OpenAPIDefinition(
@@ -21,10 +20,6 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
             name = "MIT"
         )
     ),
-    servers = {
-        @Server(url = "http://localhost:8080", description = "Development server"),
-        @Server(url = "http://petstore.swagger.io/v1", description = "Production server")
-    },
     security = {
         @SecurityRequirement(name = "bearerAuth")
     }
